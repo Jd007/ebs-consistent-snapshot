@@ -10,6 +10,11 @@ import boto.ec2
 # Can ignore otherwise (when running the script in shell)
 PATH_LIST = ['/bin', '/sbin']
 
+# Build the environment variables str (for running the script in cron)
+current_path_list = os.environ['PATH'].split(':') if len(os.environ['PATH']) > 0 else []
+total_path_list = list(set(current_path_list + PATH_LIST))
+TOTAL_PATH_STR = os.pathsep.join(total_path_list)
+
 EXEC_REQUIREMENTS = ['df', 'fsfreeze'] # List of required executables on the system
 
 AWS_ACCESS_KEY = '' # Fill in the AWS access key here
@@ -18,15 +23,15 @@ AWS_SECRET_KEY = '' # AWS secret key
 def execute_shell_command(command_str):
 
 	'''
-	Given a shell command string, executes it, waits for it to exit, then returns the return code,
-	standard output, and standard error as a 3-tuple. The two outputs are returned as lists of str
-	outputs, one line at a time in the order that they were printed.
+	Given a shell command string, executes the command, waits for it to exit, then returns the
+	return code, standard output, and standard error as a 3-tuple. The two outputs are returned
+	as lists of str outputs, one line at a time in the order that they were printed.
 
 	Command string input is executed in the default shell without question, the caller should ensure
 	that the command is trusted for security reasons (not recommended to run arbitrary user input).
 	'''
 
-	proc = subprocess.Popen(command_str, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+	proc = subprocess.Popen(command_str, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE, env={'PATH': TOTAL_PATH_STR})
 	return_code = proc.wait()
 	std_out = []
 	std_err = []
@@ -124,11 +129,6 @@ if __name__ == '__main__':
 	if sys.platform.strip().lower() != 'linux2':
 		print 'System %s is not supported.' % sys.platform
 		exit(1)
-
-	# Add additional directories to PATH (for running the script in cron)
-	for path in PATH_LIST:
-		if path not in os.environ["PATH"]:
-			os.environ["PATH"] += os.pathsep + path
 
 	# Check required programs:
 	req_status, req_output = check_requirements(EXEC_REQUIREMENTS)
