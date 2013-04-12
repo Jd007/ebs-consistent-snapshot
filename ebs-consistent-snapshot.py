@@ -5,6 +5,13 @@ import time, datetime
 import MySQLdb
 import boto.ec2
 
+# List of directories to search for, set to the normal shell user list if running the script
+# in cron (which may have a limited set of environment variables that does not include PATH).
+# Can ignore otherwise (when running the script in shell)
+PATH_LIST = ['/usr/kerberos/sbin', '/usr/kerberos/bin', '/usr/local/sbin', '/usr/local/bin',
+			'/sbin', '/bin', '/usr/sbin', '/usr/bin', '/usr/ec2/ec2-api-tools/bin',
+			'/usr/ec2/ec2-ami-tools/bin', '/root/bin']
+
 EXEC_REQUIREMENTS = ['df', 'fsfreeze'] # List of required executables on the system
 
 AWS_ACCESS_KEY = '' # Fill in the AWS access key here
@@ -119,6 +126,11 @@ if __name__ == '__main__':
 	if sys.platform.strip().lower() != 'linux2':
 		print 'System %s is not supported.' % sys.platform
 		exit(1)
+
+	# Add additional directories to PATH (for running the script in cron)
+	for path in PATH_LIST:
+		if path not in os.environ["PATH"]:
+			os.environ["PATH"] += os.pathsep + path
 
 	# Check required programs:
 	req_status, req_output = check_requirements(EXEC_REQUIREMENTS)
