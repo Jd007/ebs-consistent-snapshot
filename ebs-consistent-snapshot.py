@@ -8,9 +8,7 @@ import boto.ec2
 # List of directories to search for, set to the normal shell user list if running the script
 # in cron (which may have a limited set of environment variables that does not include PATH).
 # Can ignore otherwise (when running the script in shell)
-PATH_LIST = ['/usr/kerberos/sbin', '/usr/kerberos/bin', '/usr/local/sbin', '/usr/local/bin',
-			'/sbin', '/bin', '/usr/sbin', '/usr/bin', '/usr/ec2/ec2-api-tools/bin',
-			'/usr/ec2/ec2-ami-tools/bin', '/root/bin']
+PATH_LIST = ['/bin', '/sbin']
 
 EXEC_REQUIREMENTS = ['df', 'fsfreeze'] # List of required executables on the system
 
