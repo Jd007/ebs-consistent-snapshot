@@ -137,6 +137,8 @@ if __name__ == '__main__':
 		exit(1)
 	print 'System requirements check passed.'
 
+	print 'Starting snapshot creation process. UTC time is:', str(datetime.datetime.utcnow()).split('.')[0]
+
 	# Check the file system format and mount point, then set the file system freeze/unfreeze executable
 	fs_format, mount_point = get_file_system_format(fs_device_to_snapshot)
 	if not fs_format:
