@@ -205,9 +205,9 @@ if __name__ == '__main__':
 		print 'Creating EBS snapshot...'
 		try:
 			ec2_conn.create_snapshot(volume_id, snapshot_description + ' ' + str(datetime.datetime.utcnow()).split('.')[0])
+			print 'EBS snapshot created successfully.'
 		except:
 			print 'Snapshot creation failed. Will still attempt to unfreeze file system and unlock MySQL tables...'
-		print 'EBS snapshot created successfully.'
 
 	# Unlock the file system
 	return_code, stdout, stderr = execute_shell_command(fs_freeze_cmd + ' -u ' + mount_point)
